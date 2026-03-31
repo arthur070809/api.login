@@ -14,5 +14,14 @@
     "env": "^0.0.2",
     "express": "^5.2.1",
     "mysql2": "^3.20.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arthur070809/api.login.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arthur070809/api.login/issues"
+  },
+  "homepage": "https://github.com/arthur070809/api.login#readme"
 }
