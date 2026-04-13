@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = express.Router();
-const db = require('../db');
-const { routes } = require('../app');
+const db = require('./db');
+const { routes } = require('./app');
 
 
 //Get em usuários

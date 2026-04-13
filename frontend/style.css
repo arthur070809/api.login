@@ -1,0 +1,297 @@
+:root {
+    --bg-dark: #06080f;
+    --bg-card: #0f1424;
+    --primary-blue: #007bff;
+    --primary-purple: #8a2be2;
+    --primary-pink: #ff2e88;
+    --primary-red: #ff1e1e;
+    --gradient-main: linear-gradient(90deg, #007bff, #8a2be2, #ff2e88);
+    --text-light: #ffffff;
+    --text-muted: #9aa4b2;
+    --font-main: 'Montserrat', sans-serif;
+    --transition-fast: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3 { text-transform: uppercase; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.section-title span {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(6, 8, 15, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+    z-index: 1000;
+    padding: 15px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo a {
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-style: italic;
+}
+
+.logo span {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: var(--transition-fast);
+}
+
+.nav-links a:hover {
+    color: var(--primary-pink);
+}
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
+                url('https://via.placeholder.com/1920x1080/0a0f1f/007bff?text=F1+Hero') center/cover;
+    padding-top: 80px;
+}
+
+.hero-content h1 {
+    font-size: 4.5rem;
+    font-weight: 900;
+    font-style: italic;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+.btn-cta {
+    display: inline-block;
+    background: var(--gradient-main);
+    color: var(--text-light);
+    padding: 15px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: var(--transition-fast);
+}
+
+/* TEAM SECTION - AJUSTES DE ALINHAMENTO AQUI */
+.team-section { padding: 100px 0; }
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.team-card {
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transition-fast);
+    border-bottom: 4px solid transparent;
+    
+    /* Faz os cards terem a mesma altura */
+    display: flex;
+    flex-direction: column;
+}
+
+.team-card:hover {
+    transform: translateY(-10px);
+    border-bottom: 4px solid var(--primary-pink);
+    box-shadow: 0 15px 30px rgba(138, 43, 226, 0.3);
+}
+
+.team-card img {
+    width: 100%;
+    height: 350px;       /* Altura fixa para alinhar todas as imagens */
+    object-fit: cover;   /* Mantém a proporção sem distorcer */
+    object-position: top;/* Foca no topo (rosto dos pilotos) */
+    display: block;
+    filter: grayscale(80%);
+    transition: var(--transition-fast);
+}
+
+.team-card:hover img { filter: grayscale(0%); }
+
+.card-content {
+    padding: 25px;
+    flex-grow: 1;        /* Empurra o conteúdo para preencher o card uniformemente */
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content h3 { font-size: 1.5rem; margin-bottom: 5px; }
+
+.card-content .role {
+    color: var(--primary-purple);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.card-content p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* CAR SECTION */
+.car-section {
+    padding: 100px 0;
+    background: linear-gradient(180deg, #05070d, #0b0f1f);
+}
+
+.car-container {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.car-image img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.specs-list li {
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.specs-list li strong { color: var(--primary-blue); }
+
+/* FANZONE */
+.fanzone-section {
+    padding: 100px 0;
+    background: linear-gradient(45deg, #06080f, #140522);
+}
+
+.text-center { text-align: center; }
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.time-box {
+    background: rgba(138, 43, 226, 0.1);
+    border: 1px solid rgba(255, 46, 136, 0.4);
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 120px;
+}
+
+.time-box span:first-child {
+    display: block;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary-pink);
+}
+
+/* FOOTER */
+footer {
+    background-color: #04060c;
+    padding: 50px 0 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-bottom {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 20px;
+}
+
+/* MOBILE */
+.hamburger { display: none; cursor: pointer; }
+.hamburger .bar { display: block; width: 25px; height: 3px; margin: 5px; background: white; }
+
+@media (max-width: 900px) {
+    .car-container { flex-direction: column; }
+    .hero-content h1 { font-size: 3rem; }
+}
+
+@media (max-width: 768px) {
+    .hamburger { display: block; }
+    .nav-links {
+        position: fixed;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background: var(--bg-dark);
+        width: 100%;
+        padding: 40px;
+        transition: 0.3s;
+    }
+    .nav-links.active { left: 0; }
+}
