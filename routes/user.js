@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const db = require('../backend/db');
 const app = express();
 app.use(express.json());
 

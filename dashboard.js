@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('./db');
+const connection = require('./backend/db');
 
 // melhor volta
 router.get('/melhor-volta', (req, res) => {

@@ -1,4 +1,4 @@
-const app = require('./app');
+const app = require('./backend/app');
 const express = require('express');
 require('dotenv').config();
 const port = process.env.PORT;
@@ -7,7 +7,7 @@ const corridaRoutes = require('./routes/corredores');
 const voltaRoutes = require('./routes/voltas');
 app.use(express.json());
 
-const dashboardRoutes = require('./dashboard');
+const dashboardRoutes = require('./backend/dashboard');
 
 app.use('/dashboard', dashboardRoutes);
 
