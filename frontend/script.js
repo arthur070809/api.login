@@ -10,10 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks  = document.querySelector(".nav-links");
 
-    hamburger.addEventListener("click", () => {
-        hamburger.classList.toggle("active");
-        navLinks.classList.toggle("active");
-    });
+    if (hamburger && navLinks) {
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navLinks.classList.toggle("active");
+        });
+    }
 
     document.querySelectorAll(".nav-item").forEach(item => {
         item.addEventListener("click", function (e) {
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             e.preventDefault();
 
-            if (navLinks.classList.contains("active")) {
+            if (navLinks && navLinks.classList.contains("active")) {
                 hamburger.classList.remove("active");
                 navLinks.classList.remove("active");
             }
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const nextRace = await API.getNextRace();
             const raceDate = new Date(nextRace.date).getTime();
 
-            // Atualiza labels com dados reais
+            // Atualiza o nome do GP e Circuito
             const gpLabel = document.querySelector(".fanzone-section .gp-name");
             if (gpLabel) gpLabel.textContent = `GP ${nextRace.gp} — ${nextRace.circuit}`;
 
@@ -52,12 +54,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const minutesEl = document.getElementById("minutes");
             const secondsEl = document.getElementById("seconds");
 
-            const tick = setInterval(() => {
-                const distance = raceDate - Date.now();
+            // Só inicia o intervalo se os elementos existirem na página
+            if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
 
+            const tick = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = raceDate - now;
+
+                // Se a contagem terminar
                 if (distance < 0) {
                     clearInterval(tick);
                     [daysEl, hoursEl, minutesEl, secondsEl].forEach(el => el.textContent = "00");
+                    
                     const subtitle = document.querySelector(".fanzone-section .fanzone-subtitle");
                     if (subtitle) {
                         subtitle.textContent = "É HORA DA CORRIDA! LUZES APAGADAS!";
@@ -67,11 +75,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
-                const pad = n => String(Math.floor(n)).padStart(2, "0");
-                daysEl.textContent    = pad(distance / 864e5);
-                hoursEl.textContent   = pad((distance % 864e5) / 36e5);
-                minutesEl.textContent = pad((distance % 36e5) / 6e4);
-                secondsEl.textContent = pad((distance % 6e4) / 1e3);
+                // LÓGICA MATEMÁTICA CORRIGIDA
+                // 1000ms * 60s * 60m * 24h = 86.400.000 ms em um dia
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const pad = n => String(n).padStart(2, "0");
+
+                daysEl.textContent    = pad(days);
+                hoursEl.textContent   = pad(hours);
+                minutesEl.textContent = pad(minutes);
+                secondsEl.textContent = pad(seconds);
             }, 1000);
 
         } catch (err) {
@@ -80,33 +96,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ─── CONTADOR DE VOLTAS — ANIMAÇÃO DE INCREMENTO ─────────────────────────
-    /**
-     * Anima um número de 0 até `target` em `duration` ms.
-     * @param {HTMLElement} el
-     * @param {number} target
-     * @param {number} duration
-     */
     function animateCounter(el, target, duration = 2000) {
         const start = performance.now();
         const step = (now) => {
             const progress = Math.min((now - start) / duration, 1);
-            // Ease-out cúbico para desacelerar no final
-            const eased = 1 - Math.pow(1 - progress, 3);
+            const eased = 1 - Math.pow(1 - progress, 3); // Ease-out cúbico
             el.textContent = Math.floor(eased * target).toLocaleString("pt-BR");
             if (progress < 1) requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
     }
 
-    /**
-     * Dispara as animações dos contadores quando a seção entra no viewport.
-     * Usa IntersectionObserver para acionar apenas uma vez.
-     */
     async function initLapCounters() {
         try {
             const stats = await API.getTeamStats();
 
-            // Mapa: [id-do-elemento] => valor da API
             const counterMap = {
                 "stat-laps":    stats.totalLaps,
                 "stat-races":   stats.totalRaces,
