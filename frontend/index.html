@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Windspeed | F1 Team</title>
+    <title>Windspeed | F1 Team</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,500;0,700;0,900;1,900&display=swap" rel="stylesheet">
@@ -18,10 +18,12 @@
             </div>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="#home" class="nav-item">Início</a></li>
-                    <li><a href="#equipe" class="nav-item">A Equipe</a></li>
-                    <li><a href="#carro" class="nav-item">O Carro</a></li>
+                    <li><a href="#home"    class="nav-item">Início</a></li>
+                    <li><a href="#equipe"  class="nav-item">A Equipe</a></li>
+                    <li><a href="#carro"   class="nav-item">O Carro</a></li>
+                    <li><a href="#stats"   class="nav-item">Temporada</a></li>
                     <li><a href="#fanzone" class="nav-item">Fanzone</a></li>
+                    <li><a href="dashboard.html" class="nav-item nav-dashboard">⬛ Dashboard</a></li>
                 </ul>
             </nav>
             <div class="hamburger">
@@ -32,6 +34,7 @@
         </div>
     </header>
 
+    <!-- ═══════════════════════ HERO ═══════════════════════════════════════ -->
     <section id="home" class="hero">
         <div class="hero-content">
             <h1>DOMÍNIO ABSOLUTO.<br><span>VELOCIDADE PURA.</span></h1>
@@ -40,11 +43,12 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════ EQUIPE ════════════════════════════════════ -->
     <section id="equipe" class="team-section">
         <div class="container">
             <h2 class="section-title">Nossa <span>Equipe</span></h2>
             <div class="team-grid">
-                
+
                 <article class="team-card">
                     <img src="./baldo.webp" alt="Arthur Baldo">
                     <div class="card-content">
@@ -85,10 +89,11 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════ CARRO ═════════════════════════════════════ -->
     <section id="carro" class="car-section">
         <div class="container car-container">
             <div class="car-image">
-                <img src="./carro certo.png" alt="Carro F1 VTX-01" width="750   " height="450">
+                <img src="./carro certo.png" alt="Carro F1 VTX-01" width="750" height="450">
             </div>
             <div class="car-info">
                 <h2 class="section-title">Wind-hunter: <span>VTX-01</span></h2>
@@ -104,11 +109,63 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════ STATS / CONTADOR DE VOLTAS ════════════════ -->
+    <!--
+        SEÇÃO DE ESTATÍSTICAS DA TEMPORADA
+        Os valores são carregados dinamicamente pelo script.js via API.getTeamStats().
+        Os IDs (stat-laps, stat-races, etc.) são o contrato entre o HTML e o JS —
+        não altere os IDs sem atualizar o counterMap em script.js.
+    -->
+    <section id="stats" class="stats-section">
+        <div class="container">
+            <h2 class="section-title">Temporada <span>em Números</span></h2>
+            <p class="stats-subtitle">Dados acumulados em 2026 · Atualizado em tempo real</p>
+
+            <div class="stats-grid">
+
+                <!-- DESTAQUE: Contador de Voltas -->
+                <div class="stat-card stat-card--featured">
+                    <div class="stat-icon">◎</div>
+                    <span class="stat-value" id="stat-laps">—</span>
+                    <span class="stat-label">Voltas Completadas<br>na Temporada</span>
+                    <div class="stat-track-line"></div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🏁</div>
+                    <span class="stat-value" id="stat-races">—</span>
+                    <span class="stat-label">Corridas Disputadas</span>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <span class="stat-value" id="stat-wins">—</span>
+                    <span class="stat-label">Vitórias</span>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🥇</div>
+                    <span class="stat-value" id="stat-podiums">—</span>
+                    <span class="stat-label">Pódios</span>
+                </div>
+
+            </div>
+
+            <div class="stats-cta">
+                <a href="dashboard.html" class="btn-cta">Ver Dashboard Completo →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════ FANZONE ═══════════════════════════════════ -->
     <section id="fanzone" class="fanzone-section">
         <div class="container text-center">
             <h2 class="section-title">Aqueçam os Motores</h2>
-            <p>Contagem regressiva para o próximo Grande Prêmio</p>
-            
+            <!-- Subtítulo atualizado dinamicamente pelo script.js -->
+            <p class="fanzone-subtitle">Contagem regressiva para o próximo Grande Prêmio</p>
+            <!-- Nome do GP atualizado dinamicamente -->
+            <p class="gp-name" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;"></p>
+
             <div class="countdown-container">
                 <div class="time-box">
                     <span id="days">00</span>
@@ -130,6 +187,7 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════ FOOTER ════════════════════════════════════ -->
     <footer>
         <div class="container footer-content">
             <div class="footer-logo">
@@ -147,6 +205,8 @@
         </div>
     </footer>
 
+    <!-- api-mock.js deve vir ANTES de script.js -->
+    <script src="api-mock.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,70 +1,142 @@
+/**
+ * script.js — LÓGICA PRINCIPAL (index.html)
+ * ==========================================
+ * Depende de: api-mock.js (deve ser carregado antes deste script)
+ */
+
 document.addEventListener("DOMContentLoaded", () => {
-    
+
+    // ─── NAVBAR / HAMBURGER ───────────────────────────────────────────────────
     const hamburger = document.querySelector(".hamburger");
-    const navLinks = document.querySelector(".nav-links");
+    const navLinks  = document.querySelector(".nav-links");
 
     hamburger.addEventListener("click", () => {
         hamburger.classList.toggle("active");
         navLinks.classList.toggle("active");
     });
 
-    const navItems = document.querySelectorAll(".nav-item");
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+            if (!href || !href.startsWith("#")) return;
 
-    navItems.forEach(item => {
-        item.addEventListener("click", function(e) {
             e.preventDefault();
 
-            if(navLinks.classList.contains("active")) {
+            if (navLinks.classList.contains("active")) {
                 hamburger.classList.remove("active");
                 navLinks.classList.remove("active");
             }
 
-            const targetId = this.getAttribute("href");
-            const targetElement = document.querySelector(targetId);
-            
-            const headerOffset = 60;
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            const target = document.querySelector(href);
+            if (!target) return;
 
             window.scrollTo({
-                top: offsetPosition,
+                top: target.getBoundingClientRect().top + window.pageYOffset - 60,
                 behavior: "smooth"
             });
         });
     });
 
-    const today = new Date();
-    const nextRaceDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).getTime();
+    // ─── CONTADOR REGRESSIVO (PRÓXIMA CORRIDA) ────────────────────────────────
+    async function initCountdown() {
+        try {
+            const nextRace = await API.getNextRace();
+            const raceDate = new Date(nextRace.date).getTime();
 
-    const daysEl = document.getElementById("days");
-    const hoursEl = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
+            // Atualiza labels com dados reais
+            const gpLabel = document.querySelector(".fanzone-section .gp-name");
+            if (gpLabel) gpLabel.textContent = `GP ${nextRace.gp} — ${nextRace.circuit}`;
 
-    const updateCountdown = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = nextRaceDate - now;
+            const daysEl    = document.getElementById("days");
+            const hoursEl   = document.getElementById("hours");
+            const minutesEl = document.getElementById("minutes");
+            const secondsEl = document.getElementById("seconds");
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const tick = setInterval(() => {
+                const distance = raceDate - Date.now();
 
-        daysEl.innerText = days < 10 ? "0" + days : days;
-        hoursEl.innerText = hours < 10 ? "0" + hours : hours;
-        minutesEl.innerText = minutes < 10 ? "0" + minutes : minutes;
-        secondsEl.innerText = seconds < 10 ? "0" + seconds : seconds;
+                if (distance < 0) {
+                    clearInterval(tick);
+                    [daysEl, hoursEl, minutesEl, secondsEl].forEach(el => el.textContent = "00");
+                    const subtitle = document.querySelector(".fanzone-section .fanzone-subtitle");
+                    if (subtitle) {
+                        subtitle.textContent = "É HORA DA CORRIDA! LUZES APAGADAS!";
+                        subtitle.style.color = "var(--primary-red)";
+                        subtitle.style.fontWeight = "bold";
+                    }
+                    return;
+                }
 
-        if (distance < 0) {
-            clearInterval(updateCountdown);
-            daysEl.innerText = "00";
-            hoursEl.innerText = "00";
-            minutesEl.innerText = "00";
-            secondsEl.innerText = "00";
-            document.querySelector(".fanzone-section p").innerText = "É HORA DA CORRIDA! LUZES APAGADAS!";
-            document.querySelector(".fanzone-section p").style.color = "var(--primary-red)";
-            document.querySelector(".fanzone-section p").style.fontWeight = "bold";
+                const pad = n => String(Math.floor(n)).padStart(2, "0");
+                daysEl.textContent    = pad(distance / 864e5);
+                hoursEl.textContent   = pad((distance % 864e5) / 36e5);
+                minutesEl.textContent = pad((distance % 36e5) / 6e4);
+                secondsEl.textContent = pad((distance % 6e4) / 1e3);
+            }, 1000);
+
+        } catch (err) {
+            console.error("[Windspeed] Erro ao carregar próxima corrida:", err);
         }
-    }, 1000);
+    }
 
+    // ─── CONTADOR DE VOLTAS — ANIMAÇÃO DE INCREMENTO ─────────────────────────
+    /**
+     * Anima um número de 0 até `target` em `duration` ms.
+     * @param {HTMLElement} el
+     * @param {number} target
+     * @param {number} duration
+     */
+    function animateCounter(el, target, duration = 2000) {
+        const start = performance.now();
+        const step = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            // Ease-out cúbico para desacelerar no final
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(eased * target).toLocaleString("pt-BR");
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+
+    /**
+     * Dispara as animações dos contadores quando a seção entra no viewport.
+     * Usa IntersectionObserver para acionar apenas uma vez.
+     */
+    async function initLapCounters() {
+        try {
+            const stats = await API.getTeamStats();
+
+            // Mapa: [id-do-elemento] => valor da API
+            const counterMap = {
+                "stat-laps":    stats.totalLaps,
+                "stat-races":   stats.totalRaces,
+                "stat-podiums": stats.podiums,
+                "stat-wins":    stats.wins
+            };
+
+            const section = document.getElementById("stats");
+            if (!section) return;
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    obs.unobserve(entry.target);
+
+                    Object.entries(counterMap).forEach(([id, value]) => {
+                        const el = document.getElementById(id);
+                        if (el) animateCounter(el, value);
+                    });
+                });
+            }, { threshold: 0.2 });
+
+            observer.observe(section);
+
+        } catch (err) {
+            console.error("[Windspeed] Erro ao carregar estatísticas:", err);
+        }
+    }
+
+    // ─── INICIALIZAÇÃO ────────────────────────────────────────────────────────
+    initCountdown();
+    initLapCounters();
 });
